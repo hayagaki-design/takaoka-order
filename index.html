@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>発注フォーム｜株式会社PERSON'S 高岡工場</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-bg: #ffffff;
+      --color-bg-secondary: #f5f5f5;
+      --color-bg-tertiary: #eeeeee;
+      --color-text: #111111;
+      --color-text-secondary: #666666;
+      --color-text-tertiary: #999999;
+      --color-border: #dddddd;
+      --color-border-light: #eeeeee;
+      --color-warn: #c0392b;
+      --radius-md: 6px;
+      --radius-lg: 10px;
+      --font: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--color-bg);
+      color: var(--color-text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 0.5px solid var(--color-border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .company-from { font-size: 11px; letter-spacing: 0.08em; color: var(--color-text-secondary); }
+    .company-from strong { display: block; font-size: 14px; font-weight: 500; color: var(--color-text); margin-top: 2px; line-height: 1.5; }
+    .arrow { font-size: 18px; color: var(--color-text-tertiary); margin-top: 14px; }
+    .company-to { text-align: right; font-size: 11px; letter-spacing: 0.08em; color: var(--color-text-secondary); }
+    .company-to strong { display: block; font-size: 14px; font-weight: 500; color: var(--color-text); margin-top: 2px; }
+    .doc-title { font-size: 22px; font-weight: 500; }
+    .doc-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; }
+
+    /* Banner */
+    .banner {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      margin-bottom: 2rem;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      line-height: 1.8;
+    }
+    .banner strong { color: var(--color-text); font-weight: 500; }
+
+    /* Section label */
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.75rem;
+    }
+
+    /* Product table */
+    .product-table { width: 100%; border-collapse: collapse; margin-bottom: 1.25rem; }
+    .product-table th {
+      font-size: 11px; color: var(--color-text-secondary); font-weight: 400;
+      text-align: left; padding: 6px 12px;
+      border-bottom: 0.5px solid var(--color-border);
+    }
+    .product-table th:last-child, .product-table td:last-child { text-align: right; }
+    .product-table td {
+      padding: 14px 12px;
+      border-bottom: 0.5px solid var(--color-border-light);
+      font-size: 14px; vertical-align: middle;
+    }
+    .product-name { font-weight: 500; }
+    .product-spec { font-size: 11px; color: var(--color-text-secondary); margin-top: 3px; }
+
+    /* Qty control */
+    .qty-control { display: inline-flex; align-items: center; gap: 8px; }
+    .qty-btn {
+      width: 28px; height: 28px;
+      border: 0.5px solid var(--color-border);
+      background: var(--color-bg-secondary);
+      border-radius: 50%; cursor: pointer;
+      font-size: 16px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-text);
+    }
+    .qty-btn:hover { background: var(--color-bg-tertiary); }
+    .qty-num { font-size: 15px; font-weight: 500; min-width: 24px; text-align: center; }
+    .unit-label { font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; }
+    .subtotal { font-size: 14px; font-weight: 500; }
+
+    /* Total section */
+    .total-section {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .total-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: 13px; color: var(--color-text-secondary); padding: 4px 0;
+    }
+    .total-row.sub-block {
+      border-top: 0.5px solid var(--color-border);
+      margin-top: 8px; padding-top: 10px;
+      font-size: 14px; color: var(--color-text);
+    }
+    .total-row.grand {
+      font-size: 18px; font-weight: 500; color: var(--color-text);
+      border-top: 0.5px solid var(--color-border);
+      margin-top: 8px; padding-top: 12px;
+    }
+
+    /* Form */
+    .form-section { margin-bottom: 2rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .form-group label { font-size: 12px; color: var(--color-text-secondary); }
+    .form-group input, .form-group textarea {
+      border: 0.5px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 9px 12px; font-size: 14px;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font);
+      outline: none; transition: border-color 0.15s;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--color-text); }
+    .form-group textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+    .date-hint { font-size: 11px; color: var(--color-text-secondary); }
+    .date-warn { font-size: 11px; color: var(--color-warn); }
+
+    .divider { border: none; border-top: 0.5px solid var(--color-border-light); margin: 1.5rem 0; }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%; padding: 13px;
+      background: var(--color-text); color: var(--color-bg);
+      border: none; border-radius: var(--radius-lg);
+      font-size: 15px; font-weight: 500; cursor: pointer;
+      font-family: var(--font); transition: opacity 0.15s;
+    }
+    .submit-btn:hover { opacity: 0.82; }
+    .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .note { font-size: 11px; color: var(--color-text-tertiary); text-align: center; margin-top: 0.75rem; line-height: 1.6; }
+
+    /* Success */
+    .success { display: none; text-align: center; padding: 4rem 1rem; }
+    .success-mark {
+      width: 52px; height: 52px; border-radius: 50%;
+      border: 1.5px solid var(--color-text);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+    .success-mark svg { width: 22px; height: 22px; stroke: var(--color-text); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .success h2 { font-size: 18px; font-weight: 500; margin-bottom: 0.5rem; }
+    .success p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.7; }
+
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+      .header-top { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-top">
+      <div class="company-from">
+        <span>発注元</span>
+        <strong>株式会社PERSON'S<br><span style="font-weight:400;font-size:12px;">高岡工場</span></strong>
+      </div>
+      <div class="arrow">→</div>
+      <div class="company-to">
+        <span>発注先</span>
+        <strong>株式会社WARABI</strong>
+      </div>
+    </div>
+    <div class="doc-title">発注フォーム</div>
+    <div class="doc-sub" id="today-date"></div>
+  </div>
+
+  <div id="form-area">
+    <div class="banner" id="banner"></div>
+
+    <div class="form-section">
+      <p class="section-label">発注内容</p>
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>商品</th>
+            <th style="text-align:center;">数量</th>
+            <th>単価（1ロット）</th>
+            <th>小計</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="product-name">黒蜜</div>
+              <div class="product-spec">1ロット = 9kg　税込</div>
+              <div class="product-spec">送料 ¥1,210 / ロット（税込）</div>
+            </td>
+            <td style="text-align:center;">
+              <div class="qty-control">
+                <button class="qty-btn" onclick="changeQty('kuromitsu',-1)">−</button>
+                <span class="qty-num" id="num-kuromitsu">0</span>
+                <button class="qty-btn" onclick="changeQty('kuromitsu',1)">+</button>
+              </div>
+              <div class="unit-label">ロット</div>
+            </td>
+            <td style="font-size:13px;">¥6,800</td>
+            <td class="subtotal" id="sub-kuromitsu">—</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="product-name">シフォンケーキ</div>
+              <div class="product-spec">1ロット = 5個　税込</div>
+              <div class="product-spec">送料 ¥1,925 / ロット（税込）</div>
+            </td>
+            <td style="text-align:center;">
+              <div class="qty-control">
+                <button class="qty-btn" onclick="changeQty('chiffon',-1)">−</button>
+                <span class="qty-num" id="num-chiffon">0</span>
+                <button class="qty-btn" onclick="changeQty('chiffon',1)">+</button>
+              </div>
+              <div class="unit-label">ロット</div>
+            </td>
+            <td style="font-size:13px;">¥2,750<br><span style="font-size:11px;color:#999;">@¥550 × 5個</span></td>
+            <td class="subtotal" id="sub-chiffon">—</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="total-section">
+        <div class="total-row"><span>黒蜜　商品</span><span id="t-k-item">0 ロット　¥0</span></div>
+        <div class="total-row"><span>黒蜜　送料</span><span id="t-k-ship">¥0</span></div>
+        <div class="total-row" style="margin-top:6px;"><span>シフォンケーキ　商品</span><span id="t-c-item">0 ロット　¥0</span></div>
+        <div class="total-row"><span>シフォンケーキ　送料</span><span id="t-c-ship">¥0</span></div>
+        <div class="total-row sub-block"><span>商品合計</span><span>¥<span id="item-total">0</span></span></div>
+        <div class="total-row"><span>送料合計</span><span>¥<span id="ship-total">0</span></span></div>
+        <div class="total-row grand"><span>お支払い合計（税込）</span><span>¥<span id="grand-total">0</span></span></div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="form-section">
+      <p class="section-label">発注情報</p>
+      <div class="form-row">
+        <div class="form-group">
+          <label>発注担当者名 *</label>
+          <input type="text" id="person-name" placeholder="例：早垣 太郎">
+        </div>
+        <div class="form-group">
+          <label>希望納品日 *</label>
+          <input type="date" id="delivery-date" onchange="onDateChange()">
+          <span id="date-hint" class="date-hint"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>備考・特記事項</label>
+        <textarea id="notes" placeholder="フレーバー指定、梱包の注意点など"></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitOrder()">発注を送信する</button>
+    <p class="note">送信内容はスプレッドシートに自動記録されます。</p>
+  </div>
+
+  <div class="success" id="success-area">
+    <div class="success-mark">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>発注を受け付けました</h2>
+    <p>内容はスプレッドシートに記録されました。<br>確認後、WARABIより折り返しご連絡いたします。</p>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // 設定値（価格変更はここを編集）
+  // ============================================================
+  const ITEM  = { kuromitsu: 6800, chiffon: 2750 };
+  const SHIP  = { kuromitsu: 1210, chiffon: 1925 };
+
+  // Google Apps Script のデプロイURL（設定後ここに貼り付け）
+  const GAS_URL = 'YOUR_GAS_URL_HERE';
+  // ============================================================
+
+  const qty = { kuromitsu: 0, chiffon: 0 };
+  const DOW_JA = ['日','月','火','水','木','金','土'];
+
+  function toYMD(d) {
+    return d.getFullYear() + '-'
+      + String(d.getMonth()+1).padStart(2,'0') + '-'
+      + String(d.getDate()).padStart(2,'0');
+  }
+  function fmtDate(d) {
+    return d.toLocaleDateString('ja-JP', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
+  }
+
+  // 受付基準日：10:30以降なら翌日扱い
+  function calcOrderBaseDate() {
+    const now = new Date();
+    const cutoffPassed = now.getHours() > 10 || (now.getHours() === 10 && now.getMinutes() >= 30);
+    const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    if (cutoffPassed) base.setDate(base.getDate() + 1);
+    return { base, cutoffPassed };
+  }
+
+  // 最短納品日 = 受付基準日の翌週同曜日
+  function calcEarliest(base) {
+    const d = new Date(base.getTime());
+    d.setDate(d.getDate() + 7);
+    return d;
+  }
+
+  let earliestDate, orderBaseDow;
+
+  function init() {
+    const now = new Date();
+    document.getElementById('today-date').textContent =
+      now.toLocaleDateString('ja-JP', { year:'numeric', month:'long', day:'numeric' });
+
+    const { base, cutoffPassed } = calcOrderBaseDate();
+    orderBaseDow = base.getDay();
+    earliestDate = calcEarliest(base);
+
+    const banner = document.getElementById('banner');
+    if (cutoffPassed) {
+      banner.innerHTML =
+        '本日の受付は締め切りました（10:30締め切り）。<strong>' + DOW_JA[orderBaseDow] + '曜日付けの受付</strong>となります。<br>' +
+        '最短納品日：<strong>' + fmtDate(earliestDate) + '</strong>';
+    } else {
+      banner.innerHTML =
+        '本日 <strong>10:30</strong> までのご注文を受け付けています。<br>' +
+        '最短納品日：<strong>' + fmtDate(earliestDate) + '</strong>';
+    }
+
+    const input = document.getElementById('delivery-date');
+    input.min = toYMD(earliestDate);
+    input.value = toYMD(earliestDate);
+    document.getElementById('date-hint').textContent = '最短：' + fmtDate(earliestDate);
+  }
+
+  function onDateChange() {
+    const val = document.getElementById('delivery-date').value;
+    const hint = document.getElementById('date-hint');
+    if (!val) return;
+    const parts = val.split('-');
+    const sel = new Date(+parts[0], +parts[1]-1, +parts[2]);
+    const ear = new Date(earliestDate.getFullYear(), earliestDate.getMonth(), earliestDate.getDate());
+    if (sel < ear) {
+      hint.className = 'date-warn';
+      hint.textContent = '最短納品日（' + fmtDate(earliestDate) + '）以降をご選択ください。';
+    } else if (sel.getDay() !== orderBaseDow) {
+      hint.className = 'date-warn';
+      hint.textContent = '納品日は' + DOW_JA[orderBaseDow] + '曜日のみ指定可能です。';
+    } else {
+      hint.className = 'date-hint';
+      hint.textContent = '✓ ' + fmtDate(sel);
+    }
+  }
+
+  function changeQty(id, delta) {
+    qty[id] = Math.max(0, qty[id] + delta);
+    document.getElementById('num-' + id).textContent = qty[id];
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const kI = qty.kuromitsu * ITEM.kuromitsu, kS = qty.kuromitsu * SHIP.kuromitsu;
+    const cI = qty.chiffon   * ITEM.chiffon,   cS = qty.chiffon   * SHIP.chiffon;
+    const it = kI+cI, st = kS+cS, gt = it+st;
+    document.getElementById('sub-kuromitsu').textContent = qty.kuromitsu > 0 ? '¥'+(kI+kS).toLocaleString() : '—';
+    document.getElementById('sub-chiffon').textContent   = qty.chiffon  > 0 ? '¥'+(cI+cS).toLocaleString() : '—';
+    document.getElementById('t-k-item').textContent = qty.kuromitsu + ' ロット　¥' + kI.toLocaleString();
+    document.getElementById('t-k-ship').textContent = '¥' + kS.toLocaleString();
+    document.getElementById('t-c-item').textContent = qty.chiffon + ' ロット　¥' + cI.toLocaleString();
+    document.getElementById('t-c-ship').textContent = '¥' + cS.toLocaleString();
+    document.getElementById('item-total').textContent = it.toLocaleString();
+    document.getElementById('ship-total').textContent = st.toLocaleString();
+    document.getElementById('grand-total').textContent = gt.toLocaleString();
+  }
+
+  function submitOrder() {
+    const name    = document.getElementById('person-name').value.trim();
+    const dateVal = document.getElementById('delivery-date').value;
+    if (!name) { alert('発注担当者名を入力してください'); return; }
+    if (qty.kuromitsu === 0 && qty.chiffon === 0) { alert('発注数量を入力してください'); return; }
+    if (!dateVal) { alert('希望納品日を入力してください'); return; }
+
+    const parts = dateVal.split('-');
+    const sel = new Date(+parts[0], +parts[1]-1, +parts[2]);
+    const ear = new Date(earliestDate.getFullYear(), earliestDate.getMonth(), earliestDate.getDate());
+    if (sel < ear) { alert('希望納品日が最短納品日より前です。'); return; }
+    if (sel.getDay() !== orderBaseDow) { alert('納品日は' + DOW_JA[orderBaseDow] + '曜日のみ指定可能です。'); return; }
+
+    const btn = document.getElementById('submit-btn');
+    btn.textContent = '送信中...'; btn.disabled = true;
+
+    const kI = qty.kuromitsu*ITEM.kuromitsu, kS = qty.kuromitsu*SHIP.kuromitsu;
+    const cI = qty.chiffon*ITEM.chiffon,     cS = qty.chiffon*SHIP.chiffon;
+
+    const payload = {
+      timestamp:       new Date().toLocaleString('ja-JP'),
+      person_name:     name,
+      delivery_date:   dateVal,
+      kuromitsu_lots:  qty.kuromitsu,
+      kuromitsu_item:  kI,
+      kuromitsu_ship:  kS,
+      chiffon_lots:    qty.chiffon,
+      chiffon_pcs:     qty.chiffon * 5,
+      chiffon_item:    cI,
+      chiffon_ship:    cS,
+      item_total:      kI + cI,
+      ship_total:      kS + cS,
+      grand_total:     kI + kS + cI + cS,
+      notes:           document.getElementById('notes').value
+    };
+
+    if (GAS_URL === 'YOUR_GAS_URL_HERE') {
+      // GAS未設定時はデモ動作
+      setTimeout(() => {
+        document.getElementById('form-area').style.display = 'none';
+        document.getElementById('success-area').style.display = 'block';
+      }, 700);
+      return;
+    }
+
+    fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
+      .then(() => {
+        document.getElementById('form-area').style.display = 'none';
+        document.getElementById('success-area').style.display = 'block';
+      })
+      .catch(() => {
+        alert('送信に失敗しました。もう一度お試しください。');
+        btn.textContent = '発注を送信する';
+        btn.disabled = false;
+      });
+  }
+
+  init();
+</script>
+</body>
+</html>
