@@ -7,34 +7,19 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --color-bg: #ffffff;
-      --color-bg-secondary: #f5f5f5;
-      --color-bg-tertiary: #eeeeee;
-      --color-text: #111111;
-      --color-text-secondary: #666666;
-      --color-text-tertiary: #999999;
-      --color-border: #dddddd;
-      --color-border-light: #eeeeee;
-      --color-warn: #c0392b;
-      --radius-md: 6px;
-      --radius-lg: 10px;
+      --color-bg: #ffffff; --color-bg-secondary: #f5f5f5; --color-bg-tertiary: #eeeeee;
+      --color-text: #111111; --color-text-secondary: #666666; --color-text-tertiary: #999999;
+      --color-border: #dddddd; --color-border-light: #eeeeee; --color-warn: #c0392b;
+      --radius-md: 6px; --radius-lg: 10px;
       --font: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
     }
     body { font-family: var(--font); background: var(--color-bg); color: var(--color-text); -webkit-font-smoothing: antialiased; }
-
-    /* タブ */
     .tabs { display: flex; border-bottom: 1.5px solid var(--color-border); margin-bottom: 2rem; }
-    .tab-btn {
-      flex: 1; padding: 12px 0; font-size: 14px; font-weight: 500; background: none;
-      border: none; cursor: pointer; font-family: var(--font);
-      color: var(--color-text-secondary); border-bottom: 2px solid transparent; margin-bottom: -1.5px;
-      transition: color 0.15s;
-    }
+    .tab-btn { flex: 1; padding: 12px 0; font-size: 14px; font-weight: 500; background: none; border: none; cursor: pointer; font-family: var(--font); color: var(--color-text-secondary); border-bottom: 2px solid transparent; margin-bottom: -1.5px; transition: color 0.15s; }
     .tab-btn.active { color: var(--color-text); border-bottom-color: var(--color-text); }
     .tab-btn:hover { color: var(--color-text); }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
-
     .page { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
     .header { border-bottom: 0.5px solid var(--color-border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
     .header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.75rem; }
@@ -83,17 +68,15 @@
     .success-mark svg { width: 22px; height: 22px; stroke: var(--color-text); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
     .success h2 { font-size: 18px; font-weight: 500; margin-bottom: 0.5rem; }
     .success p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.7; }
-
-    /* 注文一覧 */
     .list-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
     .list-title { font-size: 16px; font-weight: 500; }
     .reload-btn { font-size: 12px; color: var(--color-text-secondary); background: none; border: 0.5px solid var(--color-border); border-radius: var(--radius-md); padding: 5px 12px; cursor: pointer; font-family: var(--font); }
     .reload-btn:hover { background: var(--color-bg-secondary); }
     .order-list { display: flex; flex-direction: column; gap: 10px; }
     .order-card { border: 0.5px solid var(--color-border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; background: var(--color-bg); }
-    .order-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+    .order-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 8px; }
     .order-delivery { font-size: 15px; font-weight: 500; }
-    .order-status { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 500; }
+    .order-status { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
     .status-shipped { background: #e8f5e9; color: #2e7d32; }
     .status-pending { background: #fff8e1; color: #f57f17; }
     .order-meta { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 0.75rem; }
@@ -103,10 +86,7 @@
     .order-notes { font-size: 11px; color: var(--color-text-secondary); margin-top: 4px; }
     .loading-msg { text-align: center; padding: 3rem 0; font-size: 13px; color: var(--color-text-secondary); }
     .empty-msg { text-align: center; padding: 3rem 0; font-size: 13px; color: var(--color-text-secondary); }
-
-    @media (max-width: 480px) {
-      .form-row { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -121,13 +101,11 @@
     <div class="doc-sub" id="today-date"></div>
   </div>
 
-  <!-- タブ -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('order')">📝 発注する</button>
     <button class="tab-btn" onclick="switchTab('list')">📋 注文一覧</button>
   </div>
 
-  <!-- 発注フォームタブ -->
   <div id="tab-order" class="tab-pane active">
     <div id="form-area">
       <div class="banner" id="banner"></div>
@@ -215,7 +193,6 @@
     </div>
   </div>
 
-  <!-- 注文一覧タブ -->
   <div id="tab-list" class="tab-pane">
     <div class="list-header">
       <span class="list-title">注文一覧</span>
@@ -234,18 +211,62 @@
   const qty = { kuromitsu: 0, chiffon: 0 };
   const DOW_JA = ['日','月','火','水','木','金','土'];
 
-  // タブ切り替え
-  function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-      btn.classList.toggle('active', (i === 0 && tab === 'order') || (i === 1 && tab === 'list'));
-    });
-    document.getElementById('tab-order').classList.toggle('active', tab === 'order');
-    document.getElementById('tab-list').classList.toggle('active', tab === 'list');
-    document.getElementById('page-title').textContent = tab === 'order' ? '発注フォーム' : '注文一覧';
-    if (tab === 'list') loadOrders();
+  // 日付フォーマット（日本語）
+  function fmtJP(str) {
+    if (!str || str === '') return '—';
+    const d = new Date(str);
+    if (isNaN(d.getTime())) {
+      // YYYY/MM/DD 形式の場合
+      const parts = String(str).split('/');
+      if (parts.length === 3) {
+        const d2 = new Date(parts[0], parts[1]-1, parts[2]);
+        return d2.getFullYear() + '年' + (d2.getMonth()+1) + '月' + d2.getDate() + '日';
+      }
+      // YYYY-MM-DD 形式
+      const parts2 = String(str).split('-');
+      if (parts2.length === 3) {
+        return parts2[0] + '年' + parseInt(parts2[1]) + '月' + parseInt(parts2[2]) + '日';
+      }
+      return str;
+    }
+    return d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日';
   }
 
-  // 注文一覧読み込み
+  function fmtJPDateTime(str) {
+    if (!str || str === '') return '—';
+    // "2026/04/25 12:51:08" 形式
+    const match = String(str).match(/(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2})/);
+    if (match) {
+      return match[1] + '年' + parseInt(match[2]) + '月' + parseInt(match[3]) + '日　' + match[4] + ':' + match[5];
+    }
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      return d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日　'
+        + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    }
+    return str;
+  }
+
+  function fmtDelivery(str) {
+    if (!str || str === '') return '—';
+    // YYYY-MM-DD 形式
+    const parts = String(str).split('-');
+    if (parts.length === 3) {
+      return parts[0] + '年' + parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日';
+    }
+    return fmtJP(str);
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', (i===0 && tab==='order') || (i===1 && tab==='list'));
+    });
+    document.getElementById('tab-order').classList.toggle('active', tab==='order');
+    document.getElementById('tab-list').classList.toggle('active', tab==='list');
+    document.getElementById('page-title').textContent = tab==='order' ? '発注フォーム' : '注文一覧';
+    if (tab==='list') loadOrders();
+  }
+
   function loadOrders() {
     const area = document.getElementById('order-list-area');
     area.innerHTML = '<div class="loading-msg">読み込み中...</div>';
@@ -256,25 +277,24 @@
           area.innerHTML = '<div class="empty-msg">注文データがありません。</div>';
           return;
         }
-        // 新しい順に並べる
         const sorted = orders.slice().reverse();
         area.innerHTML = '<div class="order-list">' + sorted.map(order => {
-          const isShipped = order.shipped_date && order.shipped_date !== '';
+          const isShipped = order.shipped_date && order.shipped_date !== '' && order.shipped_date !== 'false';
           const statusHtml = isShipped
-            ? '<span class="order-status status-shipped">出荷済 ' + order.shipped_date + '</span>'
+            ? '<span class="order-status status-shipped">出荷済　' + fmtJP(order.shipped_date) + '</span>'
             : '<span class="order-status status-pending">未出荷</span>';
           const items = [];
-          if (order.kuromitsu_lots > 0) items.push('黒蜜 ' + order.kuromitsu_lots + 'ロット');
-          if (order.chiffon_lots > 0) items.push('シフォン ' + order.chiffon_lots + 'ロット（' + order.chiffon_pcs + '個）');
+          if (Number(order.kuromitsu_lots) > 0) items.push('黒蜜 ' + order.kuromitsu_lots + 'ロット');
+          if (Number(order.chiffon_lots) > 0) items.push('シフォン ' + order.chiffon_lots + 'ロット（' + order.chiffon_pcs + '個）');
           const itemTags = items.map(i => '<span class="order-item-tag">' + i + '</span>').join('');
-          const deliveryLabel = order.delivery_date ? '納品希望日：' + order.delivery_date : '';
+          const deliveryLabel = order.delivery_date ? '納品希望日：' + fmtDelivery(order.delivery_date) : '';
           const notesHtml = order.notes ? '<div class="order-notes">備考：' + order.notes + '</div>' : '';
           return '<div class="order-card">'
             + '<div class="order-card-top">'
             + '<div class="order-delivery">' + deliveryLabel + '</div>'
             + statusHtml
             + '</div>'
-            + '<div class="order-meta">発注者：' + order.person_name + '　／　受付：' + order.timestamp + '</div>'
+            + '<div class="order-meta">発注者：' + order.person_name + '　／　受付：' + fmtJPDateTime(order.timestamp) + '</div>'
             + '<div class="order-items">' + itemTags + '</div>'
             + '<div class="order-total">合計 ¥' + Number(order.grand_total).toLocaleString() + '（税込）</div>'
             + notesHtml
@@ -286,12 +306,8 @@
       });
   }
 
-  function toYMD(d) {
-    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-  }
-  function fmtDate(d) {
-    return d.toLocaleDateString('ja-JP', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
-  }
+  function toYMD(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function fmtDate(d) { return d.toLocaleDateString('ja-JP', { year:'numeric', month:'long', day:'numeric', weekday:'short' }); }
   function calcOrderBaseDate() {
     const now = new Date();
     const cutoffPassed = now.getHours() > 10 || (now.getHours() === 10 && now.getMinutes() >= 30);
@@ -299,12 +315,10 @@
     if (cutoffPassed) base.setDate(base.getDate() + 1);
     return { base, cutoffPassed };
   }
-  function calcEarliest(base) {
-    const d = new Date(base.getTime());
-    d.setDate(d.getDate() + 7);
-    return d;
-  }
+  function calcEarliest(base) { const d = new Date(base.getTime()); d.setDate(d.getDate()+7); return d; }
+
   let earliestDate, orderBaseDow;
+
   function init() {
     const now = new Date();
     document.getElementById('today-date').textContent = now.toLocaleDateString('ja-JP', { year:'numeric', month:'long', day:'numeric' });
@@ -322,6 +336,7 @@
     input.value = toYMD(earliestDate);
     document.getElementById('date-hint').textContent = '最短：' + fmtDate(earliestDate);
   }
+
   function onDateChange() {
     const val = document.getElementById('delivery-date').value;
     const hint = document.getElementById('date-hint');
@@ -332,11 +347,13 @@
     if (sel < ear) { hint.className = 'date-warn'; hint.textContent = '最短納品日（' + fmtDate(earliestDate) + '）以降をご選択ください。'; }
     else { hint.className = 'date-hint'; hint.textContent = '✓ ' + fmtDate(sel); }
   }
+
   function changeQty(id, delta) {
     qty[id] = Math.max(0, qty[id] + delta);
     document.getElementById('num-' + id).textContent = qty[id];
     updateSummary();
   }
+
   function updateSummary() {
     const kI = qty.kuromitsu*ITEM.kuromitsu, kS = qty.kuromitsu*SHIP.kuromitsu;
     const cI = qty.chiffon*ITEM.chiffon,     cS = qty.chiffon*SHIP.chiffon;
@@ -351,6 +368,7 @@
     document.getElementById('ship-total').textContent = st.toLocaleString();
     document.getElementById('grand-total').textContent = gt.toLocaleString();
   }
+
   function submitOrder() {
     const name = document.getElementById('person-name').value.trim();
     const dateVal = document.getElementById('delivery-date').value;
@@ -376,6 +394,7 @@
       .then(() => { document.getElementById('form-area').style.display='none'; document.getElementById('success-area').style.display='block'; })
       .catch(() => { alert('送信に失敗しました。'); btn.textContent='発注を送信する'; btn.disabled=false; });
   }
+
   function resetForm() {
     qty.kuromitsu = 0; qty.chiffon = 0;
     document.getElementById('num-kuromitsu').textContent = '0';
@@ -389,6 +408,7 @@
     btn.textContent = '発注を送信する'; btn.disabled = false;
     window.scrollTo(0, 0);
   }
+
   init();
 </script>
 </body>
