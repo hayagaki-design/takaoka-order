@@ -377,9 +377,6 @@
     if (sel < ear) {
       hint.className = 'date-warn';
       hint.textContent = '最短納品日（' + fmtDate(earliestDate) + '）以降をご選択ください。';
-    } else if (sel.getDay() !== orderBaseDow) {
-      hint.className = 'date-warn';
-      hint.textContent = '納品日は' + DOW_JA[orderBaseDow] + '曜日のみ指定可能です。';
     } else {
       hint.className = 'date-hint';
       hint.textContent = '✓ ' + fmtDate(sel);
@@ -418,7 +415,6 @@
     const sel = new Date(+parts[0], +parts[1]-1, +parts[2]);
     const ear = new Date(earliestDate.getFullYear(), earliestDate.getMonth(), earliestDate.getDate());
     if (sel < ear) { alert('希望納品日が最短納品日より前です。'); return; }
-    if (sel.getDay() !== orderBaseDow) { alert('納品日は' + DOW_JA[orderBaseDow] + '曜日のみ指定可能です。'); return; }
 
     const btn = document.getElementById('submit-btn');
     btn.textContent = '送信中...'; btn.disabled = true;
