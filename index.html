@@ -304,7 +304,7 @@
   const SHIP  = { kuromitsu: 1210, chiffon: 1925 };
 
   // Google Apps Script のデプロイURL（設定後ここに貼り付け）
-  const GAS_URL = 'YOUR_GAS_URL_HERE';
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbybPvvM4cakkYFtwBGTlvV9yQfRM3UA7QUuM5XfTjtk4jUUftFkeaAh8rEI3fRMKNlq/exec';
   // ============================================================
 
   const qty = { kuromitsu: 0, chiffon: 0 };
@@ -439,7 +439,7 @@
       notes:           document.getElementById('notes').value
     };
 
-    if (GAS_URL === 'YOUR_GAS_URL_HERE') {
+    if (GAS_URL === 'https://script.google.com/macros/s/AKfycbybPvvM4cakkYFtwBGTlvV9yQfRM3UA7QUuM5XfTjtk4jUUftFkeaAh8rEI3fRMKNlq/exec') {
       // GAS未設定時はデモ動作
       setTimeout(() => {
         document.getElementById('form-area').style.display = 'none';
