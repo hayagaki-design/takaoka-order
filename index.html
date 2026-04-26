@@ -78,6 +78,7 @@
     .order-delivery { font-size: 15px; font-weight: 500; }
     .order-status { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
     .status-shipped { background: #e8f5e9; color: #2e7d32; }
+    .status-partial { background: #e3f2fd; color: #1565c0; }
     .status-pending { background: #fff8e1; color: #f57f17; }
     .order-meta { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 0.75rem; }
     .order-items { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0.5rem; }
@@ -279,14 +280,40 @@
         }
         const sorted = orders.slice().reverse();
         area.innerHTML = '<div class="order-list">' + sorted.map(order => {
-          const isShipped = order.shipped_date && order.shipped_date !== '' && order.shipped_date !== 'false';
-          const statusHtml = isShipped
-            ? '<span class="order-status status-shipped">出荷済　' + fmtJP(order.shipped_date) + '</span>'
-            : '<span class="order-status status-pending">未出荷</span>';
-          const items = [];
-          if (Number(order.kuromitsu_lots) > 0) items.push('黒蜜 ' + order.kuromitsu_lots + 'ロット');
-          if (Number(order.chiffon_lots) > 0) items.push('シフォン ' + order.chiffon_lots + 'ロット（' + order.chiffon_pcs + '個）');
-          const itemTags = items.map(i => '<span class="order-item-tag">' + i + '</span>').join('');
+          const kShipped = order.kuromitsu_shipped && order.kuromitsu_shipped !== '' && order.kuromitsu_shipped !== 'false';
+          const cShipped = order.chiffon_shipped   && order.chiffon_shipped   !== '' && order.chiffon_shipped   !== 'false';
+
+          // ステータス：両方出荷済 / 一部出荷済 / 未出荷
+          let statusHtml;
+          const hasK = Number(order.kuromitsu_lots) > 0;
+          const hasC = Number(order.chiffon_lots) > 0;
+          if (hasK && hasC) {
+            if (kShipped && cShipped) {
+              statusHtml = '<span class="order-status status-shipped">出荷済</span>';
+            } else if (kShipped || cShipped) {
+              statusHtml = '<span class="order-status status-partial">一部出荷済</span>';
+            } else {
+              statusHtml = '<span class="order-status status-pending">未出荷</span>';
+            }
+          } else if (hasK) {
+            statusHtml = kShipped ? '<span class="order-status status-shipped">出荷済</span>' : '<span class="order-status status-pending">未出荷</span>';
+          } else {
+            statusHtml = cShipped ? '<span class="order-status status-shipped">出荷済</span>' : '<span class="order-status status-pending">未出荷</span>';
+          }
+
+          // 商品タグ（出荷日つき）
+          const itemTags = [];
+          if (hasK) {
+            const tag = '黒蜜 ' + order.kuromitsu_lots + 'ロット'
+              + (kShipped ? '　<span style="font-size:10px;color:#2e7d32;">出荷日：' + fmtJP(order.kuromitsu_shipped) + '</span>' : '　<span style="font-size:10px;color:#f57f17;">未出荷</span>');
+            itemTags.push('<span class="order-item-tag">' + tag + '</span>');
+          }
+          if (hasC) {
+            const tag = 'シフォン ' + order.chiffon_lots + 'ロット（' + order.chiffon_pcs + '個）'
+              + (cShipped ? '　<span style="font-size:10px;color:#2e7d32;">出荷日：' + fmtJP(order.chiffon_shipped) + '</span>' : '　<span style="font-size:10px;color:#f57f17;">未出荷</span>');
+            itemTags.push('<span class="order-item-tag">' + tag + '</span>');
+          }
+
           const deliveryLabel = order.delivery_date ? '納品希望日：' + fmtDelivery(order.delivery_date) : '';
           const notesHtml = order.notes ? '<div class="order-notes">備考：' + order.notes + '</div>' : '';
           return '<div class="order-card">'
@@ -295,7 +322,7 @@
             + statusHtml
             + '</div>'
             + '<div class="order-meta">発注者：' + order.person_name + '　／　受付：' + fmtJPDateTime(order.timestamp) + '</div>'
-            + '<div class="order-items">' + itemTags + '</div>'
+            + '<div class="order-items" style="flex-direction:column;">' + itemTags.join('') + '</div>'
             + '<div class="order-total">合計 ¥' + Number(order.grand_total).toLocaleString() + '（税込）</div>'
             + notesHtml
             + '</div>';
