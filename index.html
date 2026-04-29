@@ -328,16 +328,29 @@
 
           const deliveryLabel = order.delivery_date ? '納品希望日：' + fmtDelivery(order.delivery_date) : '';
           const notesHtml = order.notes ? '<div class="order-notes">備考：' + order.notes + '</div>' : '';
-          const isConfirmed = order.confirmed && order.confirmed !== '' && order.confirmed !== 'false';
-          const confirmedHtml = isConfirmed
-            ? '<span class="order-status status-confirmed">✓ 確認済　' + fmtJP(order.confirmed) + '</span>'
-            : '<span class="order-status status-unconfirmed">！ 未確認</span>';
+          const kConfirmed = order.kuromitsu_confirmed && order.kuromitsu_confirmed !== '' && order.kuromitsu_confirmed !== 'false';
+          const cConfirmed = order.chiffon_confirmed   && order.chiffon_confirmed   !== '' && order.chiffon_confirmed   !== 'false';
+          const allConfirmed = (!hasK || kConfirmed) && (!hasC || cConfirmed);
+          const anyUnconfirmed = (hasK && !kConfirmed) || (hasC && !cConfirmed);
 
-          return '<div class="order-card" style="' + (isConfirmed ? '' : 'border-color:#ef9a9a;') + '">'
+          // 黒蜜・シフォンそれぞれの確認バッジ
+          const kConfirmedHtml = hasK
+            ? (kConfirmed
+                ? '<span class="order-status status-confirmed">✓ 黒蜜確認済　' + fmtJP(order.kuromitsu_confirmed) + '</span>'
+                : '<span class="order-status status-unconfirmed">！ 黒蜜未確認</span>')
+            : '';
+          const cConfirmedHtml = hasC
+            ? (cConfirmed
+                ? '<span class="order-status status-confirmed">✓ シフォン確認済　' + fmtJP(order.chiffon_confirmed) + '</span>'
+                : '<span class="order-status status-unconfirmed">！ シフォン未確認</span>')
+            : '';
+
+          return '<div class="order-card" style="' + (anyUnconfirmed ? 'border-color:#ef9a9a;' : '') + '">'
             + '<div class="order-card-top">'
             + '<div class="order-delivery">' + deliveryLabel + '</div>'
-            + '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">' + confirmedHtml + statusHtml + '</div>'
+            + statusHtml
             + '</div>'
+            + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0.5rem;">' + kConfirmedHtml + cConfirmedHtml + '</div>'
             + '<div class="order-meta">発注者：' + order.person_name + '　／　受付：' + fmtJPDateTime(order.timestamp) + '</div>'
             + '<div class="order-items" style="flex-direction:column;">' + itemTags.join('') + '</div>'
             + '<div class="order-total">合計 ¥' + Number(order.grand_total).toLocaleString() + '（税込）</div>'
