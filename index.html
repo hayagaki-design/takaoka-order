@@ -342,13 +342,19 @@
 
   function toYMD(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
   function fmtDate(d) { return d.toLocaleDateString('ja-JP', { year:'numeric', month:'long', day:'numeric', weekday:'short' }); }
+
+  function isCutoffPassed() {
+    const now = new Date();
+    return now.getHours() > 10 || (now.getHours() === 10 && now.getMinutes() >= 30);
+  }
+
   function calcOrderBaseDate() {
     const now = new Date();
-    const cutoffPassed = now.getHours() > 10 || (now.getHours() === 10 && now.getMinutes() >= 30);
     const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    if (cutoffPassed) base.setDate(base.getDate() + 1);
-    return { base, cutoffPassed };
+    if (isCutoffPassed()) base.setDate(base.getDate() + 1);
+    return { base, cutoffPassed: isCutoffPassed() };
   }
+
   function calcEarliest(base) { const d = new Date(base.getTime()); d.setDate(d.getDate()+7); return d; }
 
   let earliestDate, orderBaseDow;
@@ -367,9 +373,22 @@
     }
     const input = document.getElementById('delivery-date');
     input.min = toYMD(earliestDate);
-    input.value = toYMD(earliestDate);
+    // 現在の選択日が最短日より前になっていたら更新
+    if (!input.value || input.value < toYMD(earliestDate)) {
+      input.value = toYMD(earliestDate);
+    }
     document.getElementById('date-hint').textContent = '最短：' + fmtDate(earliestDate);
   }
+
+  // 1分ごとに締め切り時刻をチェックして自動更新
+  let _lastCutoffState = isCutoffPassed();
+  setInterval(() => {
+    const current = isCutoffPassed();
+    if (current !== _lastCutoffState) {
+      _lastCutoffState = current;
+      init(); // 締め切り状態が変わったらページを再初期化
+    }
+  }, 60000);
 
   function onDateChange() {
     const val = document.getElementById('delivery-date').value;
