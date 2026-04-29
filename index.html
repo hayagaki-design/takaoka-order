@@ -80,6 +80,8 @@
     .status-shipped { background: #e8f5e9; color: #2e7d32; }
     .status-partial { background: #e3f2fd; color: #1565c0; }
     .status-pending { background: #fff8e1; color: #f57f17; }
+    .status-confirmed { background: #e8f5e9; color: #2e7d32; }
+    .status-unconfirmed { background: #fce4ec; color: #c62828; font-weight:600; }
     .order-meta { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 0.75rem; }
     .order-items { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0.5rem; }
     .order-item-tag { font-size: 12px; background: var(--color-bg-secondary); border-radius: var(--radius-md); padding: 3px 10px; color: var(--color-text); }
@@ -326,10 +328,15 @@
 
           const deliveryLabel = order.delivery_date ? '納品希望日：' + fmtDelivery(order.delivery_date) : '';
           const notesHtml = order.notes ? '<div class="order-notes">備考：' + order.notes + '</div>' : '';
-          return '<div class="order-card">'
+          const isConfirmed = order.confirmed && order.confirmed !== '' && order.confirmed !== 'false';
+          const confirmedHtml = isConfirmed
+            ? '<span class="order-status status-confirmed">✓ 確認済　' + fmtJP(order.confirmed) + '</span>'
+            : '<span class="order-status status-unconfirmed">！ 未確認</span>';
+
+          return '<div class="order-card" style="' + (isConfirmed ? '' : 'border-color:#ef9a9a;') + '">'
             + '<div class="order-card-top">'
             + '<div class="order-delivery">' + deliveryLabel + '</div>'
-            + statusHtml
+            + '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">' + confirmedHtml + statusHtml + '</div>'
             + '</div>'
             + '<div class="order-meta">発注者：' + order.person_name + '　／　受付：' + fmtJPDateTime(order.timestamp) + '</div>'
             + '<div class="order-items" style="flex-direction:column;">' + itemTags.join('') + '</div>'
