@@ -334,24 +334,47 @@
           const anyUnconfirmed = (hasK && !kConfirmed) || (hasC && !cConfirmed);
 
           // 黒蜜・シフォンそれぞれの確認バッジ
-          const kConfirmedHtml = hasK
-            ? (kConfirmed
-                ? '<span class="order-status status-confirmed">✓ 黒蜜確認済　' + fmtJP(order.kuromitsu_confirmed) + '</span>'
-                : '<span class="order-status status-unconfirmed">！ 黒蜜未確認</span>')
-            : '';
-          const cConfirmedHtml = hasC
-            ? (cConfirmed
-                ? '<span class="order-status status-confirmed">✓ シフォン確認済　' + fmtJP(order.chiffon_confirmed) + '</span>'
-                : '<span class="order-status status-unconfirmed">！ シフォン未確認</span>')
-            : '';
+          // プログレスバー生成関数
+          const makeProgress = (label, no, confirmed, made, shipped) => {
+            const steps = [
+              { name: '確認', done: !!confirmed },
+              { name: '製造', done: !!made },
+              { name: '出荷', done: !!shipped }
+            ];
+            const doneCount = steps.filter(s => s.done).length;
+            const pct = Math.round(doneCount / 3 * 100);
+            const stepsHtml = steps.map((s, i) => {
+              const isDone = s.done;
+              const isNext = !isDone && (i === 0 || steps[i-1].done);
+              const color = isDone ? '#2e7d32' : isNext ? '#f57f17' : '#bbb';
+              const bg    = isDone ? '#e8f5e9' : isNext ? '#fff8e1' : '#f5f5f5';
+              return '<div style="display:flex;align-items:center;gap:4px;padding:2px 7px;border-radius:10px;background:' + bg + ';font-size:10px;font-weight:500;color:' + color + ';">'
+                + (isDone ? '✓ ' : isNext ? '▶ ' : '　')
+                + s.name + '</div>';
+            }).join('<span style="color:#ddd;font-size:10px;">›</span>');
+            const barColor = doneCount === 3 ? '#2e7d32' : doneCount === 0 ? '#ddd' : '#f57f17';
+            return '<div style="margin-bottom:6px;">'
+              + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">'
+              + '<span style="font-size:11px;font-weight:600;min-width:100px;">' + label + '</span>'
+              + '<span style="font-size:10px;color:#1565c0;background:#e3f2fd;padding:1px 5px;border-radius:8px;">' + no + '</span>'
+              + '</div>'
+              + '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">' + stepsHtml + '</div>'
+              + '<div style="margin-top:4px;height:4px;background:#eee;border-radius:2px;">'
+              + '<div style="height:4px;width:' + pct + '%;background:' + barColor + ';border-radius:2px;transition:width 0.3s;"></div>'
+              + '</div>'
+              + '</div>';
+          };
+
+          const kProgress = hasK ? makeProgress('🍯 黒蜜', order.kuromitsu_no || '—', order.kuromitsu_confirmed, order.kuromitsu_made, order.kuromitsu_shipped) : '';
+          const cProgress = hasC ? makeProgress('🍰 シフォン', order.chiffon_no || '—', order.chiffon_confirmed, order.chiffon_made, order.chiffon_shipped) : '';
 
           return '<div class="order-card" style="' + (anyUnconfirmed ? 'border-color:#ef9a9a;' : '') + '">'
             + '<div class="order-card-top">'
             + '<div class="order-delivery">' + deliveryLabel + '</div>'
             + statusHtml
             + '</div>'
-            + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0.5rem;">' + kConfirmedHtml + cConfirmedHtml + '</div>'
             + '<div class="order-meta">発注者：' + order.person_name + '　／　受付：' + fmtJPDateTime(order.timestamp) + '</div>'
+            + '<div style="margin-bottom:0.5rem;">' + kProgress + cProgress + '</div>'
             + '<div class="order-items" style="flex-direction:column;">' + itemTags.join('') + '</div>'
             + '<div class="order-total">合計 ¥' + Number(order.grand_total).toLocaleString() + '（税込）</div>'
             + notesHtml
