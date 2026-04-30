@@ -320,44 +320,35 @@
           return;
         }
 
-        const [year, month] = ym.split('-');
-        const monthLabel = year + '年' + parseInt(month) + '月';
+        const parts = ym.split('-');
+        const monthLabel = parts[0] + '年' + parseInt(parts[1]) + '月';
 
-        let itemTotal = 0, shipTotal = 0;
-        rows.forEach(r => {
-          itemTotal += (r.kuromitsu_item || 0) + (r.chiffon_item || 0);
-          shipTotal += (r.kuromitsu_ship || 0) + (r.chiffon_ship || 0);
-        });
-        const grandTotal = itemTotal + shipTotal;
-
-        // 明細行HTML
-        const rowsHtml = rows.map(row => {
-          let html = '';
+        let rowsHtml = '';
+        rows.forEach(function(row) {
           if (row.kuromitsu_lots > 0) {
-            const sub = (row.kuromitsu_item || 0) + (row.kuromitsu_ship || 0);
-            html += '<tr>'
-              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;">' + (row.kuromitsu_no || '—') + '</td>'
-              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;">黒蜜</td>'
-              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;">' + row.kuromitsu_lots + 'ロット</td>'
-              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:right;">¥' + sub.toLocaleString() + '</td>'
-              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;">' + (row.kuromitsu_shipped || '—') + '</td>'
+            rowsHtml += '<tr>'
+              + '<td class="dc">' + (row.kuromitsu_no || '—') + '</td>'
+              + '<td class="dl">黒蜜</td>'
+              + '<td class="dc">' + row.kuromitsu_lots + 'ロット</td>'
+              + '<td class="dc">' + (row.kuromitsu_shipped || '—') + '</td>'
               + '</tr>';
           }
           if (row.chiffon_lots > 0) {
-            const sub = (row.chiffon_item || 0) + (row.chiffon_ship || 0);
-            html += '<tr>'
-              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;">' + (row.chiffon_no || '—') + '</td>'
-              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;">シフォンケーキ</td>'
-              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;">' + row.chiffon_lots + 'ロット（' + row.chiffon_pcs + '個）</td>'
-              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:right;">¥' + sub.toLocaleString() + '</td>'
-              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;">' + (row.chiffon_shipped || '—') + '</td>'
+            rowsHtml += '<tr>'
+              + '<td class="dc">' + (row.chiffon_no || '—') + '</td>'
+              + '<td class="dl">シフォンケーキ</td>'
+              + '<td class="dc">' + row.chiffon_lots + 'ロット（' + row.chiffon_pcs + '個）</td>'
+              + '<td class="dc">' + (row.chiffon_shipped || '—') + '</td>'
               + '</tr>';
           }
-          return html;
-        }).join('');
+        });
 
-        area.innerHTML = '<div id="delivery-doc" style="background:#fff;padding:1.5rem;border:0.5px solid var(--color-border);border-radius:var(--border-radius-lg);">'
-          // ヘッダー
+        const docStyle = 'background:#fff;padding:1.5rem;border:0.5px solid var(--color-border);border-radius:var(--border-radius-lg);';
+        const html = '<style>'
+          + '.dc{padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;}'
+          + '.dl{padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:left;}'
+          + '</style>'
+          + '<div id="delivery-doc" style="' + docStyle + '">'
           + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">'
           + '<div>'
           + '<div style="font-size:20px;font-weight:500;margin-bottom:4px;">納　品　書</div>'
@@ -369,33 +360,24 @@
           + '<div>富山県富山市八尾町福島1014-1</div>'
           + '</div>'
           + '</div>'
-          // 宛先
           + '<div style="margin-bottom:1.5rem;">'
-          + '<div style="font-size:15px;font-weight:500;">株式会社PERSON\'S\u3000御中</div>'
+          + '<div style="font-size:15px;font-weight:500;">株式会社PERSON&#39;S　御中</div>'
           + '<div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">高岡工場</div>'
           + '</div>'
-          // 合計金額
-          + '<div style="background:var(--color-bg-secondary);border-radius:var(--border-radius-md);padding:10px 14px;margin-bottom:1.25rem;font-size:14px;font-weight:500;">'
-          + 'ご納品金額合計：¥' + grandTotal.toLocaleString() + '（税込）'
-          + '</div>'
-          // 明細テーブル
           + '<table style="width:100%;border-collapse:collapse;margin-bottom:1.25rem;">'
           + '<thead><tr style="background:#222;color:#fff;">'
-          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:left;">注文番号</th>'
+          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">注文番号</th>'
           + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:left;">品目</th>'
           + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">数量</th>'
-          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:right;">金額（税込）</th>'
           + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">出荷日</th>'
           + '</tr></thead>'
           + '<tbody>' + rowsHtml + '</tbody>'
           + '</table>'
-          // 合計
-          + '<div style="text-align:right;font-size:13px;color:var(--color-text-secondary);margin-bottom:4px;">商品合計：¥' + itemTotal.toLocaleString() + '</div>'
-          + '<div style="text-align:right;font-size:13px;color:var(--color-text-secondary);margin-bottom:4px;">送料合計：¥' + shipTotal.toLocaleString() + '</div>'
-          + '<div style="text-align:right;font-size:15px;font-weight:500;border-top:0.5px solid var(--color-border);padding-top:8px;">合計（税込）：¥' + grandTotal.toLocaleString() + '</div>'
           + '</div>';
+
+        area.innerHTML = html;
       })
-      .catch(() => {
+      .catch(function() {
         area.innerHTML = '<div class="empty-msg">データの取得に失敗しました。</div>';
       });
   }
@@ -409,227 +391,9 @@
     w.document.write('</body></html>');
     w.document.close();
     w.focus();
-    setTimeout(() => w.print(), 500);
+    setTimeout(function(){ w.print(); }, 500);
   }
 
-  function loadOrders() {
-    const area = document.getElementById('order-list-area');
-    area.innerHTML = '<div class="loading-msg">読み込み中...</div>';
-    fetch(GAS_URL + '?action=getOrders')
-      .then(r => r.json())
-      .then(orders => {
-        if (!orders || orders.length === 0) {
-          area.innerHTML = '<div class="empty-msg">注文データがありません。</div>';
-          return;
-        }
-        const sorted = orders.slice().reverse();
-        area.innerHTML = '<div class="order-list">' + sorted.map(order => {
-          const kShipped = order.kuromitsu_shipped && order.kuromitsu_shipped !== '' && order.kuromitsu_shipped !== 'false';
-          const cShipped = order.chiffon_shipped   && order.chiffon_shipped   !== '' && order.chiffon_shipped   !== 'false';
-
-          // ステータス：両方出荷済 / 一部出荷済 / 未出荷
-          let statusHtml;
-          const hasK = Number(order.kuromitsu_lots) > 0;
-          const hasC = Number(order.chiffon_lots) > 0;
-          if (hasK && hasC) {
-            if (kShipped && cShipped) {
-              statusHtml = '<span class="order-status status-shipped">出荷済</span>';
-            } else if (kShipped || cShipped) {
-              statusHtml = '<span class="order-status status-partial">一部出荷済</span>';
-            } else {
-              statusHtml = '<span class="order-status status-pending">未出荷</span>';
-            }
-          } else if (hasK) {
-            statusHtml = kShipped ? '<span class="order-status status-shipped">出荷済</span>' : '<span class="order-status status-pending">未出荷</span>';
-          } else {
-            statusHtml = cShipped ? '<span class="order-status status-shipped">出荷済</span>' : '<span class="order-status status-pending">未出荷</span>';
-          }
-
-          // 商品タグ（出荷日つき）
-          const itemTags = [];
-          if (hasK) {
-            const noLabel = order.kuromitsu_no ? '<span style="font-size:10px;color:#1565c0;">　' + order.kuromitsu_no + '</span>' : '';
-            const tag = '黒蜜 ' + order.kuromitsu_lots + 'ロット' + noLabel
-              + (kShipped ? '　<span style="font-size:10px;color:#2e7d32;">出荷日：' + fmtJP(order.kuromitsu_shipped) + '</span>' : '　<span style="font-size:10px;color:#f57f17;">未出荷</span>');
-            itemTags.push('<span class="order-item-tag">' + tag + '</span>');
-          }
-          if (hasC) {
-            const noLabel = order.chiffon_no ? '<span style="font-size:10px;color:#1565c0;">　' + order.chiffon_no + '</span>' : '';
-            const tag = 'シフォン ' + order.chiffon_lots + 'ロット（' + order.chiffon_pcs + '個）' + noLabel
-              + (cShipped ? '　<span style="font-size:10px;color:#2e7d32;">出荷日：' + fmtJP(order.chiffon_shipped) + '</span>' : '　<span style="font-size:10px;color:#f57f17;">未出荷</span>');
-            itemTags.push('<span class="order-item-tag">' + tag + '</span>');
-          }
-
-          const deliveryLabel = order.delivery_date ? '納品希望日：' + fmtDelivery(order.delivery_date) : '';
-          const notesHtml = order.notes ? '<div class="order-notes">備考：' + order.notes + '</div>' : '';
-          const kConfirmed = order.kuromitsu_confirmed && order.kuromitsu_confirmed !== '' && order.kuromitsu_confirmed !== 'false';
-          const cConfirmed = order.chiffon_confirmed   && order.chiffon_confirmed   !== '' && order.chiffon_confirmed   !== 'false';
-          const allConfirmed = (!hasK || kConfirmed) && (!hasC || cConfirmed);
-          const anyUnconfirmed = (hasK && !kConfirmed) || (hasC && !cConfirmed);
-
-          // 黒蜜・シフォンそれぞれの確認バッジ
-          // プログレスバー生成関数
-          const makeProgress = (label, no, confirmed, made, shipped) => {
-            const steps = [
-              { name: '確認', done: !!confirmed },
-              { name: '製造', done: !!made },
-              { name: '出荷', done: !!shipped }
-            ];
-            const doneCount = steps.filter(s => s.done).length;
-            const pct = Math.round(doneCount / 3 * 100);
-            const stepsHtml = steps.map((s, i) => {
-              const isDone = s.done;
-              const isNext = !isDone && (i === 0 || steps[i-1].done);
-              const color = isDone ? '#2e7d32' : isNext ? '#f57f17' : '#bbb';
-              const bg    = isDone ? '#e8f5e9' : isNext ? '#fff8e1' : '#f5f5f5';
-              return '<div style="display:flex;align-items:center;gap:4px;padding:2px 7px;border-radius:10px;background:' + bg + ';font-size:10px;font-weight:500;color:' + color + ';">'
-                + (isDone ? '✓ ' : isNext ? '▶ ' : '　')
-                + s.name + '</div>';
-            }).join('<span style="color:#ddd;font-size:10px;">›</span>');
-            const barColor = doneCount === 3 ? '#2e7d32' : doneCount === 0 ? '#ddd' : '#f57f17';
-            return '<div style="margin-bottom:6px;">'
-              + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">'
-              + '<span style="font-size:11px;font-weight:600;min-width:100px;">' + label + '</span>'
-              + '<span style="font-size:10px;color:#1565c0;background:#e3f2fd;padding:1px 5px;border-radius:8px;">' + no + '</span>'
-              + '</div>'
-              + '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">' + stepsHtml + '</div>'
-              + '<div style="margin-top:4px;height:4px;background:#eee;border-radius:2px;">'
-              + '<div style="height:4px;width:' + pct + '%;background:' + barColor + ';border-radius:2px;transition:width 0.3s;"></div>'
-              + '</div>'
-              + '</div>';
-          };
-
-          const kProgress = hasK ? makeProgress('🍯 黒蜜', order.kuromitsu_no || '—', order.kuromitsu_confirmed, order.kuromitsu_made, order.kuromitsu_shipped) : '';
-          const cProgress = hasC ? makeProgress('🍰 シフォン', order.chiffon_no || '—', order.chiffon_confirmed, order.chiffon_made, order.chiffon_shipped) : '';
-
-          return '<div class="order-card" style="' + (anyUnconfirmed ? 'border-color:#ef9a9a;' : '') + '">'
-            + '<div class="order-card-top">'
-            + '<div class="order-delivery">' + deliveryLabel + '</div>'
-            + statusHtml
-            + '</div>'
-            + '<div class="order-meta">発注者：' + order.person_name + '　／　受付：' + fmtJPDateTime(order.timestamp) + '</div>'
-            + '<div style="margin-bottom:0.5rem;">' + kProgress + cProgress + '</div>'
-            + '<div class="order-items" style="flex-direction:column;">' + itemTags.join('') + '</div>'
-            + '<div class="order-total">合計 ¥' + Number(order.grand_total).toLocaleString() + '（税込）</div>'
-            + notesHtml
-            + '</div>';
-        }).join('') + '</div>';
-      })
-      .catch(() => {
-        area.innerHTML = '<div class="empty-msg">データの取得に失敗しました。<br>しばらくしてから「更新」を押してください。</div>';
-      });
-  }
-
-  function toYMD(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-  function fmtDate(d) { return d.toLocaleDateString('ja-JP', { year:'numeric', month:'long', day:'numeric', weekday:'short' }); }
-
-  function isCutoffPassed() {
-    const now = new Date();
-    return now.getHours() > 10 || (now.getHours() === 10 && now.getMinutes() >= 30);
-  }
-
-  function calcOrderBaseDate() {
-    const now = new Date();
-    const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    if (isCutoffPassed()) base.setDate(base.getDate() + 1);
-    return { base, cutoffPassed: isCutoffPassed() };
-  }
-
-  function calcEarliest(base) { const d = new Date(base.getTime()); d.setDate(d.getDate()+7); return d; }
-
-  let earliestDate, orderBaseDow;
-
-  function init() {
-    const now = new Date();
-    document.getElementById('today-date').textContent = now.toLocaleDateString('ja-JP', { year:'numeric', month:'long', day:'numeric' });
-    const { base, cutoffPassed } = calcOrderBaseDate();
-    orderBaseDow = base.getDay();
-    earliestDate = calcEarliest(base);
-    const banner = document.getElementById('banner');
-    if (cutoffPassed) {
-      banner.innerHTML = '本日の受付は締め切りました（10:30締め切り）。<strong>' + DOW_JA[orderBaseDow] + '曜日付けの受付</strong>となります。<br>最短納品日：<strong>' + fmtDate(earliestDate) + '</strong>';
-    } else {
-      banner.innerHTML = '本日 <strong>10:30</strong> までのご注文を受け付けています。<br>最短納品日：<strong>' + fmtDate(earliestDate) + '</strong>';
-    }
-    const input = document.getElementById('delivery-date');
-    input.min = toYMD(earliestDate);
-    // 現在の選択日が最短日より前になっていたら更新
-    if (!input.value || input.value < toYMD(earliestDate)) {
-      input.value = toYMD(earliestDate);
-    }
-    document.getElementById('date-hint').textContent = '最短：' + fmtDate(earliestDate);
-  }
-
-  // 1分ごとに締め切り時刻をチェックして自動更新
-  let _lastCutoffState = isCutoffPassed();
-  setInterval(() => {
-    const current = isCutoffPassed();
-    if (current !== _lastCutoffState) {
-      _lastCutoffState = current;
-      init(); // 締め切り状態が変わったらページを再初期化
-    }
-  }, 60000);
-
-  function onDateChange() {
-    const val = document.getElementById('delivery-date').value;
-    const hint = document.getElementById('date-hint');
-    if (!val) return;
-    const parts = val.split('-');
-    const sel = new Date(+parts[0], +parts[1]-1, +parts[2]);
-    const ear = new Date(earliestDate.getFullYear(), earliestDate.getMonth(), earliestDate.getDate());
-    if (sel < ear) { hint.className = 'date-warn'; hint.textContent = '最短納品日（' + fmtDate(earliestDate) + '）以降をご選択ください。'; }
-    else { hint.className = 'date-hint'; hint.textContent = '✓ ' + fmtDate(sel); }
-  }
-
-  function changeQty(id, delta) {
-    qty[id] = Math.max(0, qty[id] + delta);
-    document.getElementById('num-' + id).textContent = qty[id];
-    updateSummary();
-  }
-
-  function updateSummary() {
-    const kI = qty.kuromitsu*ITEM.kuromitsu, kS = qty.kuromitsu*SHIP.kuromitsu;
-    const cI = qty.chiffon*ITEM.chiffon,     cS = qty.chiffon*SHIP.chiffon;
-    const it = kI+cI, st = kS+cS, gt = it+st;
-    document.getElementById('sub-kuromitsu').textContent = qty.kuromitsu > 0 ? '¥'+(kI+kS).toLocaleString() : '—';
-    document.getElementById('sub-chiffon').textContent   = qty.chiffon  > 0 ? '¥'+(cI+cS).toLocaleString() : '—';
-    document.getElementById('t-k-item').textContent = qty.kuromitsu+' ロット　¥'+kI.toLocaleString();
-    document.getElementById('t-k-ship').textContent = '¥'+kS.toLocaleString();
-    document.getElementById('t-c-item').textContent = qty.chiffon+' ロット　¥'+cI.toLocaleString();
-    document.getElementById('t-c-ship').textContent = '¥'+cS.toLocaleString();
-    document.getElementById('item-total').textContent = it.toLocaleString();
-    document.getElementById('ship-total').textContent = st.toLocaleString();
-    document.getElementById('grand-total').textContent = gt.toLocaleString();
-  }
-
-  function submitOrder() {
-    const name = document.getElementById('person-name').value.trim();
-    const dateVal = document.getElementById('delivery-date').value;
-    if (!name) { alert('発注担当者名を入力してください'); return; }
-    if (qty.kuromitsu === 0 && qty.chiffon === 0) { alert('発注数量を入力してください'); return; }
-    if (!dateVal) { alert('希望納品日を入力してください'); return; }
-    const parts = dateVal.split('-');
-    const sel = new Date(+parts[0], +parts[1]-1, +parts[2]);
-    const ear = new Date(earliestDate.getFullYear(), earliestDate.getMonth(), earliestDate.getDate());
-    if (sel < ear) { alert('希望納品日が最短納品日より前です。'); return; }
-    const btn = document.getElementById('submit-btn');
-    btn.textContent = '送信中...'; btn.disabled = true;
-    const kI = qty.kuromitsu*ITEM.kuromitsu, kS = qty.kuromitsu*SHIP.kuromitsu;
-    const cI = qty.chiffon*ITEM.chiffon,     cS = qty.chiffon*SHIP.chiffon;
-    const payload = {
-      timestamp: new Date().toLocaleString('ja-JP'), person_name: name, delivery_date: dateVal,
-      kuromitsu_lots: qty.kuromitsu, kuromitsu_item: kI, kuromitsu_ship: kS,
-      chiffon_lots: qty.chiffon, chiffon_pcs: qty.chiffon*5, chiffon_item: cI, chiffon_ship: cS,
-      item_total: kI+cI, ship_total: kS+cS, grand_total: kI+kS+cI+cS,
-      notes: document.getElementById('notes').value
-    };
-    fetch(GAS_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(payload) })
-      .then(() => {
-        document.getElementById('form-area').style.display='none';
-        document.getElementById('success-area').style.display='block';
-      })
-      .catch(() => { alert('送信に失敗しました。'); btn.textContent='発注を送信する'; btn.disabled=false; });
-  }
 
   function resetForm() {
     qty.kuromitsu = 0; qty.chiffon = 0;
