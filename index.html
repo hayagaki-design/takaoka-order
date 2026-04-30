@@ -114,6 +114,7 @@
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('order')">📝 発注する</button>
     <button class="tab-btn" onclick="switchTab('list')">📋 注文一覧</button>
+    <button class="tab-btn" onclick="switchTab('delivery')">🧾 納品書</button>
   </div>
 
   <div id="tab-order" class="tab-pane active">
@@ -204,6 +205,24 @@
     </div>
   </div>
 
+  <!-- 納品書タブ -->
+  <div id="tab-delivery" class="tab-pane">
+    <div class="list-header">
+      <span class="list-title">納品書</span>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;">
+      <div class="form-group" style="margin:0;flex:1;min-width:140px;">
+        <label style="font-size:12px;color:var(--color-text-secondary);">対象月</label>
+        <input type="month" id="delivery-month" style="border:0.5px solid var(--color-border);border-radius:var(--border-radius-md);padding:9px 12px;font-size:14px;background:var(--color-bg);color:var(--color-text);font-family:var(--font);outline:none;width:100%;">
+      </div>
+      <button onclick="loadDelivery()" style="padding:9px 18px;background:var(--color-text);color:var(--color-bg);border:none;border-radius:var(--border-radius-md);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font);margin-top:18px;">表示</button>
+      <button onclick="printDelivery()" style="padding:9px 18px;background:var(--color-bg-secondary);color:var(--color-text);border:0.5px solid var(--color-border);border-radius:var(--border-radius-md);font-size:14px;cursor:pointer;font-family:var(--font);margin-top:18px;">🖨 印刷／PDF</button>
+    </div>
+    <div id="delivery-area">
+      <div class="empty-msg">対象月を選択して「表示」を押してください。</div>
+    </div>
+  </div>
+
   <div id="tab-list" class="tab-pane">
     <div class="list-header">
       <span class="list-title">注文一覧</span>
@@ -270,12 +289,127 @@
 
   function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-      btn.classList.toggle('active', (i===0 && tab==='order') || (i===1 && tab==='list'));
+      btn.classList.toggle('active', (i===0 && tab==='order') || (i===1 && tab==='list') || (i===2 && tab==='delivery'));
     });
     document.getElementById('tab-order').classList.toggle('active', tab==='order');
     document.getElementById('tab-list').classList.toggle('active', tab==='list');
-    document.getElementById('page-title').textContent = tab==='order' ? '発注フォーム' : '注文一覧';
+    document.getElementById('tab-delivery').classList.toggle('active', tab==='delivery');
+    const titles = { order:'発注フォーム', list:'注文一覧', delivery:'納品書' };
+    document.getElementById('page-title').textContent = titles[tab] || '発注フォーム';
     if (tab==='list') loadOrders();
+    if (tab==='delivery') {
+      // 今月をデフォルト設定
+      const now = new Date();
+      const ym = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+      const el = document.getElementById('delivery-month');
+      if (el && !el.value) el.value = ym;
+    }
+  }
+
+  function loadDelivery() {
+    const ym = document.getElementById('delivery-month').value;
+    if (!ym) { alert('対象月を選択してください'); return; }
+    const area = document.getElementById('delivery-area');
+    area.innerHTML = '<div class="loading-msg">読み込み中...</div>';
+
+    fetch(GAS_URL + '?action=getDelivery&yearMonth=' + ym)
+      .then(r => r.json())
+      .then(rows => {
+        if (!rows || rows.length === 0) {
+          area.innerHTML = '<div class="empty-msg">該当する出荷データがありません。</div>';
+          return;
+        }
+
+        const [year, month] = ym.split('-');
+        const monthLabel = year + '年' + parseInt(month) + '月';
+
+        let itemTotal = 0, shipTotal = 0;
+        rows.forEach(r => {
+          itemTotal += (r.kuromitsu_item || 0) + (r.chiffon_item || 0);
+          shipTotal += (r.kuromitsu_ship || 0) + (r.chiffon_ship || 0);
+        });
+        const grandTotal = itemTotal + shipTotal;
+
+        // 明細行HTML
+        const rowsHtml = rows.map(row => {
+          let html = '';
+          if (row.kuromitsu_lots > 0) {
+            const sub = (row.kuromitsu_item || 0) + (row.kuromitsu_ship || 0);
+            html += '<tr>'
+              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;">' + (row.kuromitsu_no || '—') + '</td>'
+              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;">黒蜜</td>'
+              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;">' + row.kuromitsu_lots + 'ロット</td>'
+              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:right;">¥' + sub.toLocaleString() + '</td>'
+              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;">' + (row.kuromitsu_shipped || '—') + '</td>'
+              + '</tr>';
+          }
+          if (row.chiffon_lots > 0) {
+            const sub = (row.chiffon_item || 0) + (row.chiffon_ship || 0);
+            html += '<tr>'
+              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;">' + (row.chiffon_no || '—') + '</td>'
+              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;">シフォンケーキ</td>'
+              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;">' + row.chiffon_lots + 'ロット（' + row.chiffon_pcs + '個）</td>'
+              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:right;">¥' + sub.toLocaleString() + '</td>'
+              + '<td style="padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;">' + (row.chiffon_shipped || '—') + '</td>'
+              + '</tr>';
+          }
+          return html;
+        }).join('');
+
+        area.innerHTML = '<div id="delivery-doc" style="background:#fff;padding:1.5rem;border:0.5px solid var(--color-border);border-radius:var(--border-radius-lg);">'
+          // ヘッダー
+          + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">'
+          + '<div>'
+          + '<div style="font-size:20px;font-weight:500;margin-bottom:4px;">納　品　書</div>'
+          + '<div style="font-size:12px;color:var(--color-text-secondary);">' + monthLabel + '分</div>'
+          + '</div>'
+          + '<div style="text-align:right;font-size:12px;color:var(--color-text-secondary);">'
+          + '<div style="font-size:14px;font-weight:500;color:var(--color-text);">株式会社WARABI</div>'
+          + '<div>〒939-2376</div>'
+          + '<div>富山県富山市八尾町福島1014-1</div>'
+          + '</div>'
+          + '</div>'
+          // 宛先
+          + '<div style="margin-bottom:1.5rem;">'
+          + '<div style="font-size:15px;font-weight:500;">株式会社PERSON'S　御中</div>'
+          + '<div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">高岡工場</div>'
+          + '</div>'
+          // 合計金額
+          + '<div style="background:var(--color-bg-secondary);border-radius:var(--border-radius-md);padding:10px 14px;margin-bottom:1.25rem;font-size:14px;font-weight:500;">'
+          + 'ご納品金額合計：¥' + grandTotal.toLocaleString() + '（税込）'
+          + '</div>'
+          // 明細テーブル
+          + '<table style="width:100%;border-collapse:collapse;margin-bottom:1.25rem;">'
+          + '<thead><tr style="background:#222;color:#fff;">'
+          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:left;">注文番号</th>'
+          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:left;">品目</th>'
+          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">数量</th>'
+          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:right;">金額（税込）</th>'
+          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">出荷日</th>'
+          + '</tr></thead>'
+          + '<tbody>' + rowsHtml + '</tbody>'
+          + '</table>'
+          // 合計
+          + '<div style="text-align:right;font-size:13px;color:var(--color-text-secondary);margin-bottom:4px;">商品合計：¥' + itemTotal.toLocaleString() + '</div>'
+          + '<div style="text-align:right;font-size:13px;color:var(--color-text-secondary);margin-bottom:4px;">送料合計：¥' + shipTotal.toLocaleString() + '</div>'
+          + '<div style="text-align:right;font-size:15px;font-weight:500;border-top:0.5px solid var(--color-border);padding-top:8px;">合計（税込）：¥' + grandTotal.toLocaleString() + '</div>'
+          + '</div>';
+      })
+      .catch(() => {
+        area.innerHTML = '<div class="empty-msg">データの取得に失敗しました。</div>';
+      });
+  }
+
+  function printDelivery() {
+    const doc = document.getElementById('delivery-doc');
+    if (!doc) { alert('先に納品書を表示してください'); return; }
+    const w = window.open('', '_blank');
+    w.document.write('<html><head><title>納品書</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif;padding:2rem;color:#111;}table{width:100%;border-collapse:collapse;}th,td{padding:8px 12px;font-size:12px;}thead tr{background:#222;color:#fff;}tbody tr{border-bottom:0.5px solid #eee;}@media print{button{display:none;}}</style></head><body>');
+    w.document.write(doc.innerHTML);
+    w.document.write('</body></html>');
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 500);
   }
 
   function loadOrders() {
