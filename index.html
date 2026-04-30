@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>発注フォーム｜株式会社PERSON'S 高岡工場</title>
+  <title>発注フォーム｜株式会社PERSON&#39;S 高岡工場</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -96,7 +96,7 @@
 <div class="page">
   <div class="header">
     <div class="header-top">
-      <div class="company-from"><span>発注元</span><strong>株式会社PERSON'S<br><span style="font-weight:400;font-size:12px;">高岡工場</span></strong></div>
+      <div class="company-from"><span>発注元</span><strong>株式会社PERSON&#39;S<br><span style="font-weight:400;font-size:12px;">高岡工場</span></strong></div>
       <div class="arrow">→</div>
       <div class="company-to">
         <span>発注先</span>
@@ -407,42 +407,22 @@
         let rowsHtml = '';
         rows.forEach(function(row) {
           if (row.kuromitsu_lots > 0) {
-            rowsHtml += '<tr>'
-              + '<td class="dc">' + (row.kuromitsu_no || '—') + '</td>'
-              + '<td class="dl">黒蜜</td>'
-              + '<td class="dc">' + row.kuromitsu_lots + 'ロット</td>'
-              + '<td class="dc">' + (row.kuromitsu_shipped || '—') + '</td>'
-              + '</tr>';
+            rowsHtml += '<tr><td class="dc">' + (row.kuromitsu_no || '—') + '</td><td class="dl">黒蜜</td><td class="dc">' + row.kuromitsu_lots + 'ロット</td><td class="dc">' + (row.kuromitsu_shipped || '—') + '</td></tr>';
           }
           if (row.chiffon_lots > 0) {
-            rowsHtml += '<tr>'
-              + '<td class="dc">' + (row.chiffon_no || '—') + '</td>'
-              + '<td class="dl">シフォンケーキ</td>'
-              + '<td class="dc">' + row.chiffon_lots + 'ロット（' + row.chiffon_pcs + '個）</td>'
-              + '<td class="dc">' + (row.chiffon_shipped || '—') + '</td>'
-              + '</tr>';
+            rowsHtml += '<tr><td class="dc">' + (row.chiffon_no || '—') + '</td><td class="dl">シフォンケーキ</td><td class="dc">' + row.chiffon_lots + 'ロット（' + row.chiffon_pcs + '個）</td><td class="dc">' + (row.chiffon_shipped || '—') + '</td></tr>';
           }
         });
-        const docStyle = 'background:#fff;padding:1.5rem;border:0.5px solid var(--color-border);border-radius:var(--border-radius-lg);';
-        const html = '<style>.dc{padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;}.dl{padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:left;}</style>'
-          + '<div id="delivery-doc" style="' + docStyle + '">'
-          + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">'
-          + '<div><div style="font-size:20px;font-weight:500;margin-bottom:4px;">納　品　書</div>'
-          + '<div style="font-size:12px;color:var(--color-text-secondary);">' + monthLabel + '分</div></div>'
-          + '<div style="text-align:right;font-size:12px;color:var(--color-text-secondary);">'
-          + '<div style="font-size:14px;font-weight:500;color:var(--color-text);">株式会社WARABI</div>'
-          + '<div>〒939-2376</div><div>富山県富山市八尾町福島1014-1</div></div></div>'
-          + '<div style="margin-bottom:1.5rem;">'
-          + '<div style="font-size:15px;font-weight:500;">株式会社PERSON'S　御中</div>'
-          + '<div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">高岡工場</div></div>'
-          + '<table style="width:100%;border-collapse:collapse;margin-bottom:1.25rem;">'
-          + '<thead><tr style="background:#222;color:#fff;">'
-          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">注文番号</th>'
-          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:left;">品目</th>'
-          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">数量</th>'
-          + '<th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">出荷日</th>'
-          + '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>';
-        area.innerHTML = html;
+        const s1 = '<style>.dc{padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:center;}.dl{padding:8px 12px;border-bottom:0.5px solid #eee;font-size:13px;text-align:left;}</style>';
+        const s2 = '<div id="delivery-doc" style="background:#fff;padding:1.5rem;border:0.5px solid var(--color-border);border-radius:var(--border-radius-lg);">';
+        const s3 = '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">';
+        const s4 = '<div><div style="font-size:20px;font-weight:500;margin-bottom:4px;">納品書</div><div style="font-size:12px;color:var(--color-text-secondary);">' + monthLabel + '分</div></div>';
+        const s5 = '<div style="text-align:right;font-size:12px;color:var(--color-text-secondary);"><div style="font-size:14px;font-weight:500;color:var(--color-text);">株式会社WARABI</div><div>〒939-2376</div><div>富山県富山市八尾町福島1014-1</div></div>';
+        const s6 = '</div>';
+        const s7 = '<div style="margin-bottom:1.5rem;"><div style="font-size:15px;font-weight:500;">株式会社PERSON&apos;S　御中</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">高岡工場</div></div>';
+        const s8 = '<table style="width:100%;border-collapse:collapse;margin-bottom:1.25rem;"><thead><tr style="background:#222;color:#fff;"><th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">注文番号</th><th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:left;">品目</th><th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">数量</th><th style="padding:8px 12px;font-size:11px;font-weight:500;text-align:center;">出荷日</th></tr></thead><tbody>' + rowsHtml + '</tbody></table>';
+        const s9 = '</div>';
+        area.innerHTML = s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8 + s9;
       })
       .catch(function() {
         area.innerHTML = '<div class="empty-msg">データの取得に失敗しました。</div>';
@@ -453,7 +433,8 @@
     const doc = document.getElementById('delivery-doc');
     if (!doc) { alert('先に納品書を表示してください'); return; }
     const w = window.open('', '_blank');
-    w.document.write('<html><head><title>納品書</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif;padding:2rem;color:#111;}table{width:100%;border-collapse:collapse;}th,td{padding:8px 12px;font-size:12px;}thead tr{background:#222;color:#fff;}tbody tr{border-bottom:0.5px solid #eee;}</style></head><body>');
+    const css = 'body{font-family:-apple-system,sans-serif;padding:2rem;color:#111;}table{width:100%;border-collapse:collapse;}th,td{padding:8px 12px;font-size:12px;}thead tr{background:#222;color:#fff;}tbody tr{border-bottom:0.5px solid #eee;}';
+    w.document.write('<html><head><title>納品書</title><style>' + css + '</style></head><body>');
     w.document.write(doc.innerHTML);
     w.document.write('</body></html>');
     w.document.close();
